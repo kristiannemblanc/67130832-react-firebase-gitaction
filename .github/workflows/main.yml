@@ -5,51 +5,25 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 16  # ลด Node.js เป็นเวอร์ชัน 16
-
+          node-version: 16
+      
       - name: Install Dependencies
-        run: |
-          npm install
-          export NODE_OPTIONS=--openssl-legacy-provider  # เพิ่มบรรทัดนี้
-
-      - name: Build Project
-        run: |
-          export NODE_OPTIONS=--openssl-legacy-provider
-          npm run build
+        run: npm install
       
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: build
-
-  deploy:
-    name: Deploy to Firebase
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Build
+        run: npm run build
       
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: build
-      
-      - name: Deploy to Firebase Hosting
+      - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        with:
+          args: deploy --only hosting
