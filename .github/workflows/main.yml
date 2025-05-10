@@ -15,13 +15,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-      
+          node-version: 16  # ลด Node.js เป็นเวอร์ชัน 16
+
       - name: Install Dependencies
-        run: npm install
-      
+        run: |
+          npm install
+          export NODE_OPTIONS=--openssl-legacy-provider  # เพิ่มบรรทัดนี้
+
       - name: Build Project
-        run: npm run build
+        run: |
+          export NODE_OPTIONS=--openssl-legacy-provider
+          npm run build
       
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
